@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String                   @id @default(uuid())
+  username               String                   @unique
+  email                  String                   @unique
+  total_xp               Int
+  level                  Int
+  User_scenario_progress User_scenario_progress[]
+  created_at             DateTime                 @default(now())
+
+  Weekly_leaderboard Weekly_leaderboard[]
+}
+
+model Scenarios {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  difficulty  Difficulty @default(EASY)
+  Steps       Steps[]
+
+  User_scenario_progress User_scenario_progress[]
+}
+
+model Steps {
+  id         String    @id @default(uuid())
+  step_order Int
+  scenario   Scenarios @relation(fields: [scenarioId], references: [id])
+  scenarioId String
+  question   String
+
+  Choice Choice[]
+}
+
+model User_scenario_progress {
+  id           String    @id @default(uuid())
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  scenario     Scenarios @relation(fields: [scenarioId], references: [id])
+  scenarioId   String
+  current_step Int
+  completed    Boolean   @default(false)
+  score        Int
+  xp_earned    Int
+  finished_at  DateTime  @default(now())
+}
+
+model Choice {
+  id               String @id @default(uuid())
+  step             Steps  @relation(fields: [stepId], references: [id])
+  stepId           String
+  label            String
+  xp_reward        Int
+  financial_impact Int
+  consequence      String
+}
+
+model Weekly_leaderboard {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  week_start DateTime
+  xp         Int
+  rank       Int
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  DIFFICULT
+}
