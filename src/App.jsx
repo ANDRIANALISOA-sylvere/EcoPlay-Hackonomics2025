@@ -7,7 +7,7 @@ function App() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <>
+    <div className="mt-20">
       <Routes>
         {/* Routes publiques */}
         {publicRoutes.map((route) => (
@@ -44,7 +44,7 @@ function App() {
           }
         />
       </Routes>
-    </>
+    </div>
   );
 }
 

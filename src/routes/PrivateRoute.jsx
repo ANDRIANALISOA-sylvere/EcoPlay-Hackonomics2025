@@ -1,4 +1,5 @@
 import { EcoPlayDashboard } from "@/features/Dashboard/EcoPlayDashboard";
+import { ScenarioPage } from "../features/Scénario/ScenarioPage";
 export const user = {
     username: "Alex",
     level: 5,
@@ -11,5 +12,9 @@ export const privateRoutes = [
     {
         path: '/dashboard',
         element: <EcoPlayDashboard user={user} />
+    },
+    {
+        path: '/scenario/:scenarioId',
+        element: <ScenarioPage />
     }
 ];
