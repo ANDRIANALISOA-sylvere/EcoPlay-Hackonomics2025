@@ -94,10 +94,9 @@ export const CallToAction = () => {
       <div className="relative z-10 max-w-4xl mx-auto">
         <div
           className={`transition-all duration-1000 ease-out
-            ${
-              isVisible
-                ? "opacity-100 translate-y-0 scale-100"
-                : "opacity-0 translate-y-8 scale-95"
+            ${isVisible
+              ? "opacity-100 translate-y-0 scale-100"
+              : "opacity-0 translate-y-8 scale-95"
             }`}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
@@ -119,10 +118,9 @@ export const CallToAction = () => {
 
           <p
             className={`mb-8 text-xl md:text-2xl leading-relaxed transition-all duration-1000 ease-out
-              ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4"
+              ${isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
               }`}
             style={{ transitionDelay: "300ms" }}
           >
@@ -132,10 +130,9 @@ export const CallToAction = () => {
 
           <div
             className={`flex flex-wrap justify-center gap-8 mb-8 transition-all duration-1000 ease-out
-              ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4"
+              ${isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
               }`}
             style={{ transitionDelay: "600ms" }}
           >
@@ -147,8 +144,7 @@ export const CallToAction = () => {
               <div
                 key={index}
                 className={`text-center transition-all duration-500 ease-out
-                  ${
-                    isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
+                  ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
                   }`}
                 style={{ transitionDelay: `${800 + index * 200}ms` }}
               >
@@ -162,15 +158,14 @@ export const CallToAction = () => {
 
           <div
             className={`transition-all duration-1000 ease-out
-              ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4"
+              ${isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
               }`}
             style={{ transitionDelay: "1000ms" }}
           >
-            <a
-              href="/signup"
+            <Link
+              to="/register"
               className={`inline-block bg-white text-emerald-600 px-8 py-4 rounded-2xl font-bold text-lg
                 shadow-2xl hover:shadow-3xl transition-all duration-300 ease-out
                 hover:bg-emerald-50 hover:scale-105 hover:-translate-y-1
@@ -191,15 +186,14 @@ export const CallToAction = () => {
                   →
                 </span>
               </span>
-            </a>
+            </Link>
           </div>
 
           <p
             className={`mt-4 text-sm text-emerald-100 transition-all duration-1000 ease-out
-              ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-2"
+              ${isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-2"
               }`}
             style={{ transitionDelay: "1200ms" }}
           >
@@ -207,27 +201,6 @@ export const CallToAction = () => {
           </p>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) rotate(0deg);
-          }
-          25% {
-            transform: translateY(-10px) rotate(5deg);
-          }
-          50% {
-            transform: translateY(-20px) rotate(0deg);
-          }
-          75% {
-            transform: translateY(-10px) rotate(-5deg);
-          }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
     </section>
   );
 };

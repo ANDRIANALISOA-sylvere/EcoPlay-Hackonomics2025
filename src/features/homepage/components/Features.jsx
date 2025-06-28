@@ -104,10 +104,9 @@ const AnimatedFeatureCard = ({ feature, index }) => {
       className={`group relative overflow-hidden rounded-3xl transition-all duration-700 ease-out
         hover:scale-105 hover:-translate-y-3 cursor-pointer
         ${feature.bgColor}
-        ${
-          isVisible
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-12 scale-90"
+        ${isVisible
+          ? "opacity-100 translate-y-0 scale-100"
+          : "opacity-0 translate-y-12 scale-90"
         }`}
       style={{
         transitionDelay: `${index * 150}ms`,
@@ -150,19 +149,16 @@ const AnimatedFeatureCard = ({ feature, index }) => {
         </p>
 
         <div
-          className={`mt-6 flex items-center text-sm font-semibold bg-gradient-to-r ${
-            feature.color
-          } bg-clip-text text-transparent
+          className={`mt-6 flex items-center text-sm font-semibold bg-gradient-to-r ${feature.color
+            } bg-clip-text text-transparent
           transform transition-all duration-300
-          ${
-            isHovered ? "translate-x-2 opacity-100" : "translate-x-0 opacity-70"
-          }`}
+          ${isHovered ? "translate-x-2 opacity-100" : "translate-x-0 opacity-70"
+            }`}
         >
           <span>Discover more</span>
           <svg
-            className={`ml-2 w-4 h-4 transition-transform duration-300 ${
-              isHovered ? "translate-x-1" : ""
-            }`}
+            className={`ml-2 w-4 h-4 transition-transform duration-300 ${isHovered ? "translate-x-1" : ""
+              }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -191,7 +187,7 @@ const FloatingDecoration = ({ position, delay, icon }) => (
   <div
     className={`absolute ${position} text-6xl opacity-10 pointer-events-none`}
     style={{
-      animation: `float 6s ease-in-out infinite`,
+      animation: `float_features 6s ease-in-out infinite`,
       animationDelay: `${delay}s`,
     }}
   >
@@ -215,10 +211,9 @@ export const Features = () => {
         <div
           ref={headerRef}
           className={`mb-16 transition-all duration-1200 ease-out
-            ${
-              headerVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 -translate-y-12"
+            ${headerVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-12"
             }`}
         >
           <div
@@ -254,24 +249,6 @@ export const Features = () => {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) rotate(0deg);
-          }
-          25% {
-            transform: translateY(-20px) rotate(5deg);
-          }
-          50% {
-            transform: translateY(-40px) rotate(0deg);
-          }
-          75% {
-            transform: translateY(-20px) rotate(-5deg);
-          }
-        }
-      `}</style>
     </section>
   );
 };

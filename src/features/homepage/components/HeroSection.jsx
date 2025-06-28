@@ -1,55 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-
-const FloatingIcon = ({ icon, delay, position }) => (
-  <motion.div
-    className={`absolute text-4xl opacity-20 ${position}`}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{
-      opacity: [0.1, 0.3, 0.1],
-      y: [0, -20, 0],
-      rotate: [0, 10, -10, 0],
-    }}
-    transition={{
-      duration: 4,
-      delay,
-      repeat: Infinity,
-      ease: "easeInOut",
-    }}
-  >
-    {icon}
-  </motion.div>
-);
-
-const AnimatedCounter = ({ target, suffix = "", duration = 2 }) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let startTime;
-    const animate = (currentTime) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min(
-        (currentTime - startTime) / (duration * 1000),
-        1
-      );
-
-      setCount(Math.floor(progress * target));
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    requestAnimationFrame(animate);
-  }, [target, duration]);
-
-  return (
-    <span>
-      {count}
-      {suffix}
-    </span>
-  );
-};
+import { FloatingIcon } from "@/components/FloatingIcon"
 
 export const HeroSection = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
