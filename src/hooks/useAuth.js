@@ -10,11 +10,9 @@ export function useAuth() {
         const isAuth = !!token;
         setIsAuthenticated(isAuth);
 
-        // Redirection si authentifié et sur une page publique
         if (isAuth && ['/', '/login', '/register'].includes(window.location.pathname)) {
             navigate('/dashboard');
         }
-        // Redirection si non authentifié et sur une page privée
         else if (!isAuth && window.location.pathname.startsWith('/dashboard')) {
             navigate('/');
         }

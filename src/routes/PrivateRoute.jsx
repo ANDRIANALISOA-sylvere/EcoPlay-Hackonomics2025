@@ -1,20 +1,19 @@
 import { EcoPlayDashboard } from "@/features/Dashboard/EcoPlayDashboard";
-import { ScenarioPage } from "../features/Scénario/ScenarioPage";
-export const user = {
-    username: "Alex",
-    level: 5,
-    total_xp: 1250,
-    streak: 7,
-    leaderboard_position: 12,
-    weekly_xp: 320
-};
+import { ScenarioPage } from "@/features/Scénario/ScenarioPage";
+import { getUserProgress } from "@/lib/api/scenario";
+import { getScenario } from "@/lib/api/scenario";
+import { getSteps } from "@/lib/api/steps";
+import { getChoices } from "@/lib/api/choices";
+import { getCurrentUser } from "@/lib/api/user";
+const user = await getCurrentUser();
+
 export const privateRoutes = [
-    {
-        path: '/dashboard',
-        element: <EcoPlayDashboard user={user} />
-    },
-    {
-        path: '/scenario/:scenarioId',
-        element: <ScenarioPage />
-    }
+  {
+    path: "/dashboard",
+    element: <EcoPlayDashboard user={user} />,
+  },
+  {
+    path: "/scenario/:scenarioId",
+    element: <ScenarioPage />,
+  },
 ];

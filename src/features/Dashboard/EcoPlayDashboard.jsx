@@ -7,54 +7,34 @@ import { Badge } from "@/components/Badge";
 import { Tooltip } from "@/components/Tooltip";
 import { Confetti } from "@/components/Confetti";
 import { useNavigate } from "react-router-dom";
+import { getScenario, getUserProgress } from "@/lib/api/scenario";
 
 export function EcoPlayDashboard({ user }) {
     const navigate = useNavigate();
-    const [scenarios, setScenarios] = useState([
-        { id: 1, title: "Budget étudiant", difficulty: "easy", completed: true, xp: 20, description: "Apprends à gérer un budget mensuel avec un revenu limité" },
-        { id: 2, title: "Premier loyer", difficulty: "medium", completed: true, xp: 30, description: "Gère ton premier appartement et tes charges" },
-        { id: 3, title: "Crédit smartphone", difficulty: "hard", completed: false, xp: 40, description: "Comprends les implications d'un crédit à la consommation" },
-        { id: 4, title: "Courses mensuelles", difficulty: "easy", completed: false, xp: 25, description: "Optimise tes dépenses alimentaires" },
-        { id: 5, title: "Abonnements", difficulty: "medium", completed: false, xp: 35, description: "Maîtrise tes abonnements récurrents" },
-        { id: 6, title: "Épargne", difficulty: "hard", completed: false, xp: 50, description: "Découvre les bases de l'épargne et des investissements" },
-        { id: 7, title: "Assurance auto", difficulty: "medium", completed: false, xp: 45, description: "Choisis la meilleure assurance pour ton véhicule" },
-    ]);
-
+    const [scenarios, setScenarios] = useState([]);
+    const [userProgress, setUserProgress] = useState([]);
+    const [mergedScenarios, setMergedScenarios] = useState([]);
     const [showConfetti, setShowConfetti] = useState(false);
     const [activeScenario, setActiveScenario] = useState(null);
-    const [achievements, setAchievements] = useState([
-        { id: 1, title: "Premier pas", description: "Complète ton premier scénario", unlocked: true, icon: "👣", xp: 10 },
-        { id: 2, title: "Enchaînement", description: "Complète 3 scénarios consécutifs", unlocked: false, icon: "🔗", xp: 30 },
-        { id: 3, title: "Maître de l'argent", description: "Complète un scénario difficile", unlocked: false, icon: "💰", xp: 50 },
-    ]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Simuler un nouveau scénario complété
-    // const completeScenario = (id) => {
-    //     setScenarios(scenarios.map(scenario =>
-    //         scenario.id === id ? { ...scenario, completed: true } : scenario
-    //     ));
-
-    //     setShowConfetti(true);
-    //     setTimeout(() => setShowConfetti(false), 5000);
-
-    //     // Vérifier les achievements
-    //     checkAchievements();
-    // };
-
-    const checkAchievements = () => {
-        const completedCount = scenarios.filter(s => s.completed).length;
-        const hasCompletedHard = scenarios.some(s => s.completed && s.difficulty === "hard");
-
-        setAchievements(achievements.map(ach => {
-            if (ach.id === 2 && completedCount >= 3) return { ...ach, unlocked: true };
-            if (ach.id === 3 && hasCompletedHard) return { ...ach, unlocked: true };
-            return ach;
-        }));
+    // Fusionner les scénarios avec la progression de l'utilisateur
+    const mergeScenariosWithProgress = (scenarios, progress) => {
+        return scenarios.map(scenario => {
+            const userScenario = progress.find(p => p.scenarioId === scenario.id);
+            return {
+                ...scenario,
+                completed: userScenario?.completed || false,
+                xp: userScenario?.xp_earned || scenario.xp,
+                currentStep: userScenario?.current_step || 0,
+                finished_at: userScenario?.finished_at || null
+            };
+        });
     };
 
     const isScenarioUnlocked = (index) => {
         if (index === 0) return true;
-        return scenarios[index - 1].completed;
+        return mergedScenarios[index - 1]?.completed || false;
     };
 
     const getDifficultyStyles = (scenario, isUnlocked) => {
@@ -92,8 +72,58 @@ export function EcoPlayDashboard({ user }) {
 
     const getConnectionLineColor = (index) => {
         if (index === 0) return "#10b981";
-        return scenarios[index - 1].completed ? "#10b981" : "#d1d5db";
+        return mergedScenarios[index - 1]?.completed ? "#10b981" : "#d1d5db";
     };
+
+    // Charger les données depuis l'API
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                
+                // Charger les scénarios et la progression en parallèle
+                const [scenariosData, progressData] = await Promise.all([
+                    getScenario(),
+                    getUserProgress()
+                ]);
+
+                setScenarios(scenariosData);
+                setUserProgress(progressData);
+                
+                // Fusionner les données
+                const merged = mergeScenariosWithProgress(scenariosData, progressData);
+                setMergedScenarios(merged);
+
+                // Vérifier si un nouveau scénario a été complété pour afficher les confettis
+                const newlyCompleted = progressData.some(p => p.completed);
+                if (newlyCompleted) {
+                    setShowConfetti(true);
+                    setTimeout(() => setShowConfetti(false), 5000);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [user.id]);
+
+    // Calculer le nombre de scénarios complétés et l'XP total
+    const completedScenarios = mergedScenarios.filter(s => s.completed).length;
+    const totalXp = mergedScenarios.reduce((sum, scenario) => sum + (scenario.completed ? scenario.xp : 0), 0);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-white flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Chargement des scénarios...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-white">
@@ -122,15 +152,15 @@ export function EcoPlayDashboard({ user }) {
                             <div>
                                 <div className="flex justify-between mb-1">
                                     <span className="font-medium">Progression</span>
-                                    <span className="text-emerald-600 font-bold">{user.total_xp} XP</span>
+                                    <span className="text-emerald-600 font-bold">{totalXp} XP</span>
                                 </div>
                                 <ProgressBar
-                                    value={(user.total_xp % 1000) / 10}
+                                    value={(totalXp % 1000) / 10}
                                     colorFrom="from-emerald-400"
                                     colorTo="to-blue-500"
                                 />
                                 <p className="text-xs text-gray-500 mt-1 text-right">
-                                    {1000 - (user.total_xp % 1000)} XP jusqu'au niveau {user.level + 1}
+                                    {1000 - (totalXp % 1000)} XP jusqu'au niveau {user.level + 1}
                                 </p>
                             </div>
 
@@ -138,13 +168,7 @@ export function EcoPlayDashboard({ user }) {
                                 <div className="bg-gradient-to-br from-emerald-50 to-blue-50 p-3 rounded-xl text-center">
                                     <p className="text-sm text-gray-600">Scénarios</p>
                                     <p className="text-xl font-bold text-emerald-600">
-                                        {scenarios.filter(s => s.completed).length}/{scenarios.length}
-                                    </p>
-                                </div>
-                                <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-3 rounded-xl text-center">
-                                    <p className="text-sm text-gray-600">Série</p>
-                                    <p className="text-xl font-bold text-amber-600 flex items-center justify-center gap-1">
-                                        <span className="text-amber-500">🔥</span> {user.streak} jours
+                                        {completedScenarios}/{scenarios.length}
                                     </p>
                                 </div>
                             </div>
@@ -152,7 +176,7 @@ export function EcoPlayDashboard({ user }) {
                     </div>
                 </div>
 
-                {/* Colonne centrale - Scénarios connectés par une ligne */}
+                {/* Colonne centrale - Scénarios */}
                 <div className="w-full lg:w-2/4 lg:px-6 mb-8 lg:mb-0">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold text-gray-800">Tes scénarios</h2>
@@ -177,13 +201,13 @@ export function EcoPlayDashboard({ user }) {
 
                     <div className="relative">
                         <div className="space-y-16">
-                            {scenarios.map((scenario, index) => {
+                            {mergedScenarios.map((scenario, index) => {
                                 const isUnlocked = isScenarioUnlocked(index);
 
                                 return (
                                     <div key={scenario.id} className="relative">
                                         {/* Ligne de connexion vers le scénario suivant */}
-                                        {index < scenarios.length - 1 && (
+                                        {index < mergedScenarios.length - 1 && (
                                             <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-1 h-16 z-0">
                                                 <motion.div
                                                     className="w-full h-full rounded-full"
@@ -238,7 +262,7 @@ export function EcoPlayDashboard({ user }) {
                                                     )}
 
                                                     {/* Badge "NOUVEAU" pour scénario débloqué */}
-                                                    {!scenario.completed && isUnlocked && index > 0 && scenarios[index - 1].completed && (
+                                                    {!scenario.completed && isUnlocked && index > 0 && mergedScenarios[index - 1].completed && (
                                                         <motion.div
                                                             className="absolute -top-2 -right-2 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg"
                                                             initial={{ scale: 0, rotate: -45 }}
@@ -344,8 +368,16 @@ export function EcoPlayDashboard({ user }) {
                                     onClick={() => navigate(`/scenario/${activeScenario.id}`)}
                                     className="w-full bg-gradient-to-r cursor-pointer from-emerald-500 to-blue-500 text-white py-2 rounded-lg font-bold shadow-md hover:shadow-lg transition-all"
                                 >
-                                    Commencer le scénario
+                                    {activeScenario.completed ? "Rejouer" : "Commencer"} le scénario
                                 </button>
+
+                                {activeScenario.completed && activeScenario.finished_at && (
+                                    <div className="mt-4 p-3 bg-emerald-50 rounded-lg">
+                                        <p className="text-sm text-emerald-700 font-medium">
+                                            ✓ Complété le {new Date(activeScenario.finished_at).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
 
