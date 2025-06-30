@@ -1,9 +1,14 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:8000/api";
-const token = localStorage.getItem("authToken");
+
+const getAuthToken = () => {
+  return localStorage.getItem("authToken") || localStorage.getItem("token");
+};
+
 export const getUserProgress = async () => {
   try {
+    const token = getAuthToken();
     const response = await axios.get(`${API_URL}/progress`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -11,7 +16,7 @@ export const getUserProgress = async () => {
     });
     return response.data;
   } catch (error) {
-    throw error.response.data;
+    throw error.response?.data || error.message;
   }
 };
 
@@ -24,7 +29,7 @@ export const updateUserProgress = async ({
   finished_at,
 }) => {
   try {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
     const response = await axios.put(
       `${API_URL}/progress/${scenarioId}`,
       {
@@ -36,7 +41,8 @@ export const updateUserProgress = async ({
       },
       {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
       }
     );
@@ -49,6 +55,7 @@ export const updateUserProgress = async ({
 
 export const getScenario = async () => {
   try {
+    const token = getAuthToken(); // Récupération à chaque appel
     const response = await axios.get(`${API_URL}/scenario`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -56,6 +63,6 @@ export const getScenario = async () => {
     });
     return response.data;
   } catch (error) {
-    throw error.response.data;
+    throw error.response?.data || error.message;
   }
 };
