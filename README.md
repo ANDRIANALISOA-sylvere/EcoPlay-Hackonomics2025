@@ -2,6 +2,8 @@
 
 EcoPlay is a web-based educational game designed to promote **financial literacy** and **economic awareness** in a fun and interactive way. Created for the **Hackonomics 2025** hackathon, it targets young people and students who want to improve their financial decision-making skills through real-life scenarios.
 
+Api Link Repo : https://github.com/ANDRIANALISOA-sylvere/Api-EcoPlay-Hackonomics2025
+
 ## 🌟 Features
 
 - 🧩 **Scenario-based gameplay** — Make choices in real-life financial situations (e.g., budgeting, saving, avoiding credit traps).
